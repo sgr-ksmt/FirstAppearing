@@ -12,7 +12,7 @@ Helper Protocol-Extension for UIViewController's viewWillAppear/viewDidAppear.
 
 ## :pencil2:How to use
 
-- Adopt *FirstAppearing* protocol.
+- Adapt *FirstAppearing* protocol.
 - Use *viewWillAppearOnce* in *viewWillAppear* or <br />
 Use *viewDidAppearOnce* in *viewDidAppear*.
 
