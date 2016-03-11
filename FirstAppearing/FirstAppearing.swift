@@ -9,34 +9,36 @@
 import Foundation
 import UIKit
 
-private var alreadyCalledViewWillAppearOnceKey: UInt8 = 0
-private var alreadyCalledViewDidAppearOnceKey: UInt8 = 0
 
 private extension UIViewController {
+    private struct AssociatedKeys {
+        static var viewWillAppearOnceKey = "once_viewWillAppear"
+        static var viewDidAppearOnceKey = "once_viewDidAppear"
+    }
     
-    private func getBookValue(key: UnsafePointer<UInt8>) -> Bool {
+    private func getBookValue(key: UnsafePointer<Void>) -> Bool {
         return (objc_getAssociatedObject(self, key) as? Bool) ?? false
     }
     
-    private func setBoolValue(key: UnsafePointer<UInt8>, value: AnyObject?) {
+    private func setBoolValue(key: UnsafePointer<Void>, value: AnyObject?) {
         if getBookValue(key) { return }
         objc_setAssociatedObject(self, key, value, .OBJC_ASSOCIATION_RETAIN)
     }
     
     private var alreadyCalledViewWillAppearOnce: Bool {
         get {
-            return getBookValue(&alreadyCalledViewWillAppearOnceKey)
+            return getBookValue(&AssociatedKeys.viewWillAppearOnceKey)
         }
         set {
-            setBoolValue(&alreadyCalledViewWillAppearOnceKey, value: newValue)
+            setBoolValue(&AssociatedKeys.viewWillAppearOnceKey, value: newValue)
         }
     }
     private var alreadyCalledViewDidAppearOnce: Bool {
         get {
-            return getBookValue(&alreadyCalledViewDidAppearOnceKey)
+            return getBookValue(&AssociatedKeys.viewDidAppearOnceKey)
         }
         set {
-            setBoolValue(&alreadyCalledViewDidAppearOnceKey, value: newValue)
+            setBoolValue(&AssociatedKeys.viewDidAppearOnceKey, value: newValue)
         }
     }
     
