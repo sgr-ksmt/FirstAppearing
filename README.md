@@ -1,3 +1,5 @@
+**Note**: This framework no longer maintained (not available in Swift 3). Use **[Once](https://github.com/sgr-ksmt/Once)** instead. :bow:
+
 # FirstAppearing
 Helper Protocol-Extension for UIViewController's viewWillAppear/viewDidAppear.
 
