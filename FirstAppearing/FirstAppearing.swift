@@ -10,35 +10,35 @@ import Foundation
 import UIKit
 
 
-private extension UIViewController {
+extension UIViewController {
     private struct AssociatedKeys {
         static var viewWillAppearOnceKey = "once_viewWillAppear"
         static var viewDidAppearOnceKey = "once_viewDidAppear"
     }
     
-    private func getBookValue(key: UnsafePointer<Void>) -> Bool {
+    private func getBookValue(key: UnsafeRawPointer) -> Bool {
         return (objc_getAssociatedObject(self, key) as? Bool) ?? false
     }
     
-    private func setBoolValue(key: UnsafePointer<Void>, value: AnyObject?) {
-        if getBookValue(key) { return }
+    private func setBoolValue(key: UnsafeRawPointer, value: AnyObject?) {
+        if getBookValue(key: key) { return }
         objc_setAssociatedObject(self, key, value, .OBJC_ASSOCIATION_RETAIN)
     }
     
-    private var alreadyCalledViewWillAppearOnce: Bool {
+    internal var alreadyCalledViewWillAppearOnce: Bool {
         get {
-            return getBookValue(&AssociatedKeys.viewWillAppearOnceKey)
+            return getBookValue(key: &AssociatedKeys.viewWillAppearOnceKey)
         }
         set {
-            setBoolValue(&AssociatedKeys.viewWillAppearOnceKey, value: newValue)
+            setBoolValue(key: &AssociatedKeys.viewWillAppearOnceKey, value: newValue as AnyObject)
         }
     }
-    private var alreadyCalledViewDidAppearOnce: Bool {
+    internal var alreadyCalledViewDidAppearOnce: Bool {
         get {
-            return getBookValue(&AssociatedKeys.viewDidAppearOnceKey)
+            return getBookValue(key: &AssociatedKeys.viewDidAppearOnceKey)
         }
         set {
-            setBoolValue(&AssociatedKeys.viewDidAppearOnceKey, value: newValue)
+            setBoolValue(key: &AssociatedKeys.viewDidAppearOnceKey, value: newValue as AnyObject)
         }
     }
     
@@ -47,25 +47,26 @@ private extension UIViewController {
 public protocol FirstAppearing {}
 public extension FirstAppearing where Self: UIViewController {
     
-    private func callOnce(inout flag: Bool, @noescape closure: () -> Void) {
+    private func callOnce(flag: inout Bool, closure: () -> Void) {
         if !flag {
             closure()
             flag = true
         }
     }
     
-    public func viewWillAppearOnce(fromFunction: String = __FUNCTION__, @noescape closure: () -> Void) {
+    func viewWillAppearOnce(fromFunction: String = #function, closure: () -> Void) {
         guard fromFunction == "viewWillAppear" else {
             return
         }
-        callOnce(&alreadyCalledViewWillAppearOnce, closure: closure)
+        callOnce(flag: &alreadyCalledViewWillAppearOnce, closure: closure)
     }
     
-    public func viewDidAppearOnce(fromFunction: String = __FUNCTION__, @noescape closure: () -> Void) {
+    func viewDidAppearOnce(fromFunction: String = #function, closure: () -> Void) {
         guard fromFunction == "viewDidAppear" else {
             return
         }
-        callOnce(&alreadyCalledViewDidAppearOnce, closure: closure)
+        callOnce(flag: &alreadyCalledViewDidAppearOnce, closure: closure)
     }
     
 }
+
